@@ -41,6 +41,14 @@ This installer tries to:
 - install Python 3 with `winget` when Python is missing
 - launch `run_app.bat`
 
+If the repository is already downloaded, users can also just double-click:
+
+```text
+run_app.bat
+```
+
+`run_app.bat` now tries to install Python automatically with `winget` when Python is missing, then continues with venv and dependency setup.
+
 Manual Git install:
 
 ```powershell
@@ -49,7 +57,7 @@ cd Threads-creator
 .\run_app.bat
 ```
 
-The launcher handles Python package installation on first run.
+The launcher handles Python installation, virtual environment creation, and Python package installation on first run.
 
 Double-click:
 
@@ -57,7 +65,7 @@ Double-click:
 run_app.bat
 ```
 
-On first run, the launcher creates a virtual environment and installs Python dependencies automatically.
+On first run, the launcher creates a virtual environment and installs Python dependencies automatically. If Python is missing, it tries to install Python first.
 
 If you prefer PowerShell:
 
