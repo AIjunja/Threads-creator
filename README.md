@@ -20,6 +20,24 @@ The app collects source material, summarizes the important signals with your sel
 
 ## Quick Start
 
+If you are using a vibe-coding tool or AI coding agent, paste this repository URL:
+
+```text
+https://github.com/AIjunja/Threads-creator
+```
+
+Then ask it to clone the repo and run the Windows launcher.
+
+Manual install:
+
+```powershell
+git clone https://github.com/AIjunja/Threads-creator.git
+cd Threads-creator
+.\run_app.bat
+```
+
+The launcher handles dependency installation on first run.
+
 Double-click:
 
 ```text
