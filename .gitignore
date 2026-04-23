@@ -1,0 +1,17 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.env
+*.log
+thread_app_debug.log
+
+data/outputs/
+data/personas/
+*.md.tmp
+
+.DS_Store
+Thumbs.db
