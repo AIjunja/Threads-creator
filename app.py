@@ -3,6 +3,7 @@ from datetime import datetime
 import pathlib
 import re
 import threading
+import webbrowser
 
 LOG_FILE = pathlib.Path.home() / "thread_app_debug.log"
 
@@ -104,6 +105,7 @@ ACTIVE_THEME = apply_theme_tokens(load_config().get("theme_mode", "dark"))
 FONT_FAMILY = get_ui_font_family()
 FALLBACK_FONT = "Malgun Gothic"
 NO_PERSONA_LABEL = "페르소나를 먼저 만들어주세요"
+CREATOR_CHANNEL_URL = "https://www.youtube.com/@AI%EC%AD%8C"
 
 
 _STATUS_PREFIX_RE = re.compile(r"^[\W_]+\s*")
@@ -248,7 +250,9 @@ class StatusBar(ctk.CTkFrame):
 class App(ctk.CTk):
     def __init__(self):
         super().__init__(fg_color=BG)
-        self.theme_mode = normalize_theme_mode(load_config().get("theme_mode", ACTIVE_THEME))
+        config = load_config()
+        self.theme_mode = normalize_theme_mode(config.get("theme_mode", ACTIVE_THEME))
+        self.creator_acknowledged = bool(config.get("creator_cta_acknowledged", False))
         self.title("Thread AI")
         self.geometry("560x780")
         self.minsize(430, 620)
@@ -283,6 +287,7 @@ class App(ctk.CTk):
             "persona": self.persona_var.get() if hasattr(self, "persona_var") else "",
             "count": self.count_var.get() if hasattr(self, "count_var") else "",
             "github": self.github_var.get() if hasattr(self, "github_var") else True,
+            "creator_acknowledged": self.creator_cta_var.get() if hasattr(self, "creator_cta_var") else self.creator_acknowledged,
         }
 
     def _restore_form_state(self, snapshot: dict):
@@ -304,6 +309,18 @@ class App(ctk.CTk):
             self.count_var.set(snapshot["count"])
         if hasattr(self, "github_var"):
             self.github_var.set(bool(snapshot.get("github", True)))
+        if hasattr(self, "creator_cta_var"):
+            self.creator_cta_var.set(bool(snapshot.get("creator_acknowledged", self.creator_acknowledged)))
+
+    def _open_creator_channel(self):
+        webbrowser.open(CREATOR_CHANNEL_URL)
+        self.status.set("AI쭌 채널을 열었어요. 확인 후 체크해주세요", "done")
+
+    def _save_creator_cta_state(self):
+        self.creator_acknowledged = bool(self.creator_cta_var.get())
+        config = load_config()
+        config["creator_cta_acknowledged"] = self.creator_acknowledged
+        save_config(config)
 
     def _build(self):
         self.grid_columnconfigure(0, weight=1)
@@ -406,6 +423,60 @@ class App(ctk.CTk):
         self._build_metric(stat_row, 0, "모델", "선택 가능")
         self._build_metric(stat_row, 1, "출력", "Markdown")
         self._build_metric(stat_row, 2, "발행", "준비 중")
+
+        cta_row = ctk.CTkFrame(hero, fg_color=MUTED, corner_radius=12)
+        cta_row.grid(row=3, column=0, padx=20, pady=(0, 20), sticky="ew")
+        cta_row.grid_columnconfigure(0, weight=1)
+
+        ctk.CTkLabel(
+            cta_row,
+            text="AI쭌 채널을 확인한 뒤 사용해주세요",
+            font=ui_font(15, "bold"),
+            text_color=TEXT,
+            anchor="w",
+        ).grid(row=0, column=0, sticky="ew", padx=14, pady=(14, 2))
+
+        ctk.CTkLabel(
+            cta_row,
+            text="업데이트와 사용 팁은 AI쭌 채널에서 계속 안내합니다. 채널을 열고 확인 체크를 해야 초안 생성이 진행됩니다.",
+            font=ui_font(12),
+            text_color=TEXT_MUTED,
+            anchor="w",
+            justify="left",
+            wraplength=430,
+        ).grid(row=1, column=0, sticky="ew", padx=14, pady=(0, 10))
+
+        action_row = ctk.CTkFrame(cta_row, fg_color="transparent")
+        action_row.grid(row=2, column=0, sticky="ew", padx=14, pady=(0, 14))
+        action_row.grid_columnconfigure(0, weight=1)
+
+        ctk.CTkButton(
+            action_row,
+            text="AI쭌 채널 열기",
+            height=38,
+            width=132,
+            font=ui_font(13, "bold"),
+            fg_color=PRIMARY,
+            hover_color=PRIMARY_HOVER,
+            text_color="white",
+            corner_radius=10,
+            command=self._open_creator_channel,
+        ).grid(row=0, column=0, sticky="w")
+
+        self.creator_cta_var = ctk.BooleanVar(value=self.creator_acknowledged)
+        ctk.CTkCheckBox(
+            action_row,
+            text="채널 확인했어요. 계속 진행할게요",
+            variable=self.creator_cta_var,
+            command=self._save_creator_cta_state,
+            checkbox_width=20,
+            checkbox_height=20,
+            corner_radius=6,
+            fg_color=PRIMARY,
+            hover_color=PRIMARY_HOVER,
+            text_color=TEXT,
+            font=ui_font(12, "bold"),
+        ).grid(row=0, column=1, sticky="e")
 
     def _build_metric(self, parent, column: int, label: str, value: str):
         box = ctk.CTkFrame(parent, fg_color=MUTED, corner_radius=10)
@@ -1378,6 +1449,9 @@ class App(ctk.CTk):
     def _start(self):
         persona = self.persona_combo.get()
         append_debug_log(f"[DEBUG] _start called, persona='{persona}'")
+        if hasattr(self, "creator_cta_var") and not self.creator_cta_var.get():
+            self.status.set("AI쭌 채널을 확인하고 체크해주세요", "error")
+            return
         if not persona or persona == NO_PERSONA_LABEL:
             self.status.set("먼저 페르소나 만들기로 말투를 설정해주세요", "error")
             return

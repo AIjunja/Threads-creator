@@ -21,6 +21,7 @@ DEFAULT_CONFIG = {
     "openai_model": os.getenv("OPENAI_MODEL", get_default_model("openai")),
     "gemini_model": os.getenv("GEMINI_MODEL", get_default_model("gemini")),
     "theme_mode": os.getenv("AI_THREAD_THEME", "dark"),
+    "creator_cta_acknowledged": False,
 }
 
 
