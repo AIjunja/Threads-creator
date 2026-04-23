@@ -314,7 +314,7 @@ class App(ctk.CTk):
 
     def _open_creator_channel(self):
         webbrowser.open(CREATOR_CHANNEL_URL)
-        self.status.set("AI쭌 채널을 열었어요. 확인 후 체크해주세요", "done")
+        self.status.set("AI쭌 채널을 열었어요. 구독 후 체크해주세요", "done")
 
     def _save_creator_cta_state(self):
         self.creator_acknowledged = bool(self.creator_cta_var.get())
@@ -430,7 +430,7 @@ class App(ctk.CTk):
 
         ctk.CTkLabel(
             cta_row,
-            text="AI쭌 채널을 확인한 뒤 사용해주세요",
+            text="사용료 = AI쭌 구독하기",
             font=ui_font(15, "bold"),
             text_color=TEXT,
             anchor="w",
@@ -438,7 +438,7 @@ class App(ctk.CTk):
 
         ctk.CTkLabel(
             cta_row,
-            text="업데이트와 사용 팁은 AI쭌 채널에서 계속 안내합니다. 채널을 열고 확인 체크를 해야 초안 생성이 진행됩니다.",
+            text="업데이트와 사용 팁은 AI쭌 채널에서 계속 안내합니다. 채널을 열고 구독한 뒤 확인 체크를 해야 초안 생성이 진행됩니다.",
             font=ui_font(12),
             text_color=TEXT_MUTED,
             anchor="w",
@@ -452,7 +452,7 @@ class App(ctk.CTk):
 
         ctk.CTkButton(
             action_row,
-            text="AI쭌 채널 열기",
+            text="AI쭌 구독하기",
             height=38,
             width=132,
             font=ui_font(13, "bold"),
@@ -466,7 +466,7 @@ class App(ctk.CTk):
         self.creator_cta_var = ctk.BooleanVar(value=self.creator_acknowledged)
         ctk.CTkCheckBox(
             action_row,
-            text="채널 확인했어요. 계속 진행할게요",
+            text="AI쭌 채널 구독했어요",
             variable=self.creator_cta_var,
             command=self._save_creator_cta_state,
             checkbox_width=20,
@@ -1450,7 +1450,7 @@ class App(ctk.CTk):
         persona = self.persona_combo.get()
         append_debug_log(f"[DEBUG] _start called, persona='{persona}'")
         if hasattr(self, "creator_cta_var") and not self.creator_cta_var.get():
-            self.status.set("AI쭌 채널을 확인하고 체크해주세요", "error")
+            self.status.set("AI쭌 채널 구독 체크가 필요해요", "error")
             return
         if not persona or persona == NO_PERSONA_LABEL:
             self.status.set("먼저 페르소나 만들기로 말투를 설정해주세요", "error")
