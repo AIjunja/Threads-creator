@@ -28,7 +28,20 @@ https://github.com/AIjunja/Threads-creator
 
 Then ask it to clone the repo and run the Windows launcher.
 
-Manual install:
+Fresh Windows PC install:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/AIjunja/Threads-creator/main/install.ps1 | iex"
+```
+
+This installer tries to:
+
+- install Git with `winget` when Git is missing
+- download the repository ZIP when Git cannot be installed
+- install Python 3 with `winget` when Python is missing
+- launch `run_app.bat`
+
+Manual Git install:
 
 ```powershell
 git clone https://github.com/AIjunja/Threads-creator.git
@@ -36,7 +49,7 @@ cd Threads-creator
 .\run_app.bat
 ```
 
-The launcher handles dependency installation on first run.
+The launcher handles Python package installation on first run.
 
 Double-click:
 
